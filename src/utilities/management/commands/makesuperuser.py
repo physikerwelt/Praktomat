@@ -11,26 +11,25 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
 
 class Command(BaseCommand):
-	option_list = BaseCommand.option_list + (
-		make_option('--username', dest='username', default=None,
-			help='Specifies the username of the existing user (mail address for shibboleth users).'),
-	)
-	help = 'Make a user a superuser.'
+    help = 'Make a user a superuser.'
 
-	def handle(self, *args, **options):
-		username = options.get('username', None)
-		verbosity = int(options.get('verbosity', 1))
+    def add_arguments(self, parser):
+        parser.add_argument('--username', dest='username', default=None,
+                            help='Specifies the username of the existing user (mail address for shibboleth users).')
 
-		if not username:
-			raise CommandError("Please specify a user with --username")	
+    def handle(self, *args, **options):
+        username = options.get('username', None)
+        verbosity = int(options.get('verbosity', 1))
 
-		user = User.objects.get(username=username)
-		if verbosity >= 1:
-		  self.stdout.write("Found user %s\n" % user)
-		user.is_staff = True
-		user.is_active = True
-		user.is_superuser = True
-		user.save()
-		if verbosity >= 1:
-		  self.stdout.write("Superuser created successfully.\n")
+        if not username:
+            raise CommandError("Please specify a user with --username")
 
+        user = User.objects.get(username=username)
+        if verbosity >= 1:
+            self.stdout.write("Found user %s\n" % user)
+        user.is_staff = True
+        user.is_active = True
+        user.is_superuser = True
+        user.save()
+        if verbosity >= 1:
+            self.stdout.write("Superuser created successfully.\n")
